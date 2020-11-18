@@ -7,9 +7,10 @@
 
 # 次の三角数かつ五角数かつ六角数な数を求めよ.
 
+# 参考URL
+# https://qiita.com/271828_tk/items/636c1402469f7ebc722f
+
 import time
-
-
 
 start = time.time()
 
