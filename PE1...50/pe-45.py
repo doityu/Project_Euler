@@ -18,12 +18,14 @@ N = 70000
 # 三角数
 triangleNum = [ (i * (i + 1) //2) for i in range(N)]
 # 互角数
-pentagonalNum = [ (i * (3*i -1) //2) for i in range(N)]
+# pentagonalNum = [ (i * (3*i -1) //2) for i in range(N)]
 # 六角数
-hexagonalNum = [ (i * (2*i - 1)) for i in range(N)]
+# hexagonalNum = [ (i * (2*i - 1)) for i in range(N)]
 
 for t in triangleNum:
-    if(t in pentagonalNum and t in hexagonalNum):
+    if(((1+(1+24*t)**(1/2))/6).is_integer() 
+    and ((1+(8*t+1)**(1/2))/4).is_integer()):
+    # if(t in pentagonalNum and t in hexagonalNum):
         print(t)
 
 print(type(triangleNum[0]))
