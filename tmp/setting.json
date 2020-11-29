@@ -1,0 +1,16 @@
+{
+    "hatenablogtools.hatenablog": {
+        "userId": "program-memo-diary",
+        "apiKey": "kian0gsegr",
+        "blogId": "study-diary.hateblo.jp"
+    },
+    "hatenablogtools.blogcontents": {
+        "draft": true,
+        "uploadTime": "8:00",
+        "contentOnly": false
+    },
+    "hatenablogtools.fotolife": {
+        "folder": "",
+        "imgLinkType": "markdown"
+    }
+}
