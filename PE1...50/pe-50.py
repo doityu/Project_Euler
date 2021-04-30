@@ -27,7 +27,7 @@ def primes(max_number):
     is_prime = [1] * max_number
     square_root_of_max = max_number ** 0.5
     for number in range(3, max_number, 2):
-        if is_prime[number] is 0:
+        if is_prime[number] == 0:
             continue
         yield number
         if number <= square_root_of_max:
@@ -37,15 +37,21 @@ def primes(max_number):
 
 # 連続する素数の和の最長を返す
 def consecutivePrimeSum(prime_list):
-    for i in range(len(prime_list), 1, -1):
-        for spot in range(len(prime_list) - i):
-            num = 0
-            for j in range(i):
-                num += prime_list[j + spot]
-                if(num > prime_list[len(prime_list)-1]):
-                    break
-            if(num in prime_list):
-                return(i, num)
+    max_num = prime_list[len(prime_list)-1]
+    max_length = 0
+    num_ans = 0
+    for i in range(len(prime_list)):
+        sum_num = prime_list[i]
+        length = 1
+        for j in range(i + 1 ,len(prime_list)):
+            sum_num += prime_list[j]
+            length += 1
+            if(sum_num > max_num):
+                break
+            elif(max_length < length and sum_num in prime_list):
+                max_length = length
+                num_ans = sum_num
+    return max_length, num_ans
 
 prime_li = []
 for prime in primes(1000000):
