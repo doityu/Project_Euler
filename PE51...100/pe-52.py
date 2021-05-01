@@ -11,7 +11,6 @@ def isSameNum(a, b):
 
 if __name__ == "__main__":
     MAX_NUM = 10 ** 6
-    ans = []
     for num in range(1, MAX_NUM + 1):
         if(isSameNum(num, num * 2)
         and isSameNum(num, num * 3)
