@@ -8,6 +8,9 @@
 # 1000回中プレイヤー1が勝つのは何回か? (訳注 : この問題に置いてA 2 3 4 5というストレートは考えなくてもよい)
 import sys
 from enum import Enum
+import collections
+
+
 # カードの役の種類
 class CARD_RANK(Enum):
     HIGH_CARD      = 0
@@ -69,7 +72,7 @@ def is_max_value(p1_card, p2_card):
         print("勝敗を決められません", p1_card, p2_card)
         sys.exit(1)
 
-# お互いの手札の役が同じ場合に呼ばれる役の中身を比較する
+# TODO:お互いの手札の役が同じ場合に呼ばれる役の中身を比較する
 def get_compariosn_rank(p1_card, p2_card, rank):
     return True
 
@@ -102,7 +105,7 @@ def get_card_rank_and_value(card):
     else:
         is_flash = True
 
-    # 4つの役に該当するか判定
+    # 下記の役か判定
     # ・ロイヤルストレートフラッシュ 
     # ・ストレートフラッシュ 
     # ・ストレート 
@@ -121,12 +124,37 @@ def get_card_rank_and_value(card):
         # フラッシュ
         return CARD_RANK.FLUSH
 
+    # カードの値の出現回数を取得、出現回数順に並べる
+    counter_list = collections.Counter(card_value)
+    value_count = sorted(counter_list.values(), reverse=True)
+    # 下記の役か判定
+    # ・フォーカード
+    # ・フルハウス
+    # ・スリーカード
+    # ・ツー・ペア
+    # ・ワン・ペア
+    if(value_count[0] == 4):
+        # フォーカード
+        return CARD_RANK.FOUR_KIND
+    elif(value_count[0] == 3):
+        if(value_count[1] == 2):
+            # フルハウス
+            return CARD_RANK.FULL_HOUSE
+        else:
+            # スリーカード
+            return CARD_RANK.THREE_KIND
+    elif(value_count[0] == 2):
+        if(value_count[1] == 2):
+            # ツー・ペア
+            return CARD_RANK.TWO_PAIRS
+        else:
+            # ワン・ペア
+            return CARD_RANK.ONE_PAIR
+    else:
+        # 役がない場合
+        return CARD_RANK.HIGH_CARD
 
-
-    # 役がない場合
-    return CARD_RANK.HIGH_CARD
-
-# プレイヤー１の手札がプレイヤー2の手札に勝っているか判定する
+# TODO:プレイヤー１の手札がプレイヤー2の手札に勝っているか判定する
 def is_win_player1(p1_card, p2_card):
     p1_rank = get_card_rank_and_value(p1_card)
     p2_rank = get_card_rank_and_value(p2_card)
@@ -154,14 +182,11 @@ if __name__ == "__main__":
     # for i in range(len(p1_card_list)):
     #     if(is_win_player1(p1_card_list[i], p2_card_list[i])):
     #         p1_win += 1
-    # print(p1_card_list[0][0][:1], p1_card_list[0][0][1:])
-    # card_rank = get_card_rank_and_value(1)
-    # print(card_rank)
+    # print(p1_win)
 
-    # print(sorted(['1','Q','A','T', '4']))
     royal = ['TC', 'JC', 'QC', 'KC', 'AC']
     sample = ['AC', 'QC', 'TC', 'KS', 'JS']
-
-    print(get_card_rank_and_value(sample))
+    for i in range(10):
+        print(get_card_rank_and_value(p1_card_list[i]), get_card_rank_and_value(p2_card_list[i]))
 
 
