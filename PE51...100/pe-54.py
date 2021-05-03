@@ -271,25 +271,15 @@ def is_win_player1(p1_card, p2_card):
         return True
     elif(p1_rank.value == p2_rank.value):
         # カードの役が同じ場合、役を構成する中で値が最も大きい方が勝ち
-        return compariosn_rank(p1_card, p2_card, p1_rank)
+        return get_compariosn_rank(p1_card, p2_card, p1_rank)
     else:
         return False
 
 if __name__ == "__main__":
     p1_card_list, p2_card_list = preparation()
-    print(p1_card_list[0], p2_card_list[0])
 
     p1_win = 0
-    # for i in range(len(p1_card_list)):
-    #     if(is_win_player1(p1_card_list[i], p2_card_list[i])):
-    #         p1_win += 1
-    # print(p1_win)
-
-    royal = ['TC', 'JC', 'QC', 'KC', 'AC']
-    sample = ['AC', 'QC', 'TC', 'KS', 'JS']
-    test1 = ['AC', 'AC', '5C', '5S', 'AS']
-    test2 = ['AC', 'AC', '5C', '5S', '5S']
-    print(get_compariosn_rank(test1, test2, CARD_RANK.FULL_HOUSE))
-
-
-
+    for i in range(len(p1_card_list)):
+        if(is_win_player1(p1_card_list[i], p2_card_list[i])):
+            p1_win += 1
+    print(p1_win)
