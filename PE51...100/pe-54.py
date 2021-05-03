@@ -33,6 +33,10 @@ def error(p1_card, p2_card):
     print("勝敗を決められません", p1_card, p2_card)
     sys.exit(1)
 
+# 辞書の値からキーを取得
+def get_keys_from_value(d, val):
+    return [k for k, v in d.items() if v == val]
+
 # poker.txtからプレイヤー1と2の手札のリストを返す
 def preparation():
     f = open("./pe-54_poker.txt", "r")
@@ -76,9 +80,101 @@ def is_max_value(p1_card, p2_card):
     else:
         error(p1_card, p2_card)
 
-# TODO:お互いの手札の役が同じ場合に呼ばれる役の中身を比較する
+# お互いの手札の役が同じ場合に呼ばれる役の中身を比較する
 def get_compariosn_rank(p1_card, p2_card, rank):
-    return True
+    # 以下のランクのときは中身の大きさだけ比較する
+    # ・役無し(ハイカード)
+    # ・ストレート
+    # ・フラッシュ
+    # ・ストレートフラッシュ
+    if(rank == CARD_RANK.HIGH_CARD 
+    or rank == CARD_RANK.STRAIGHT 
+    or rank == CARD_RANK.FLUSH 
+    or rank == CARD_RANK.STRAIGHT_FLUSH):
+        return is_max_value(p1_card, p2_card)
+    
+    # カードを値に分割
+    card1_value = []
+    card2_value = []
+    for i in range(len(p1_card)):
+        p1_key = p1_card[i][:1]
+        card1_value.append(CARD_VALUES[p1_key])
+        p2_key = p2_card[i][:1]
+        card2_value.append(CARD_VALUES[p2_key])
+    # 出現回数取得
+    counter1 = collections.Counter(card1_value)
+    counter2 = collections.Counter(card2_value)
+
+    if(rank == CARD_RANK.FOUR_KIND):
+        # フォーカードときは回数順に並んだ値の大きさだけ比較する
+        p1_value = get_keys_from_value(counter1, 4)
+        p2_value = get_keys_from_value(counter2, 4)
+        if(p1_value > p2_value):
+            return True
+        elif(p1_value == p2_value):
+            p1_value = get_keys_from_value(counter1, 1)
+            p2_value = get_keys_from_value(counter2, 1)
+            if(p1_value > p2_value):
+                return True
+            elif(p1_value < p2_value):
+                return False
+        else:
+            return False
+
+    elif(rank == CARD_RANK.FULL_HOUSE):
+        # フルハウスのときも回数順に並んだ値の大きさだけ比較する
+        p1_value = get_keys_from_value(counter1, 3)
+        p2_value = get_keys_from_value(counter2, 3)
+        if(p1_value > p2_value):
+            return True
+        elif(p1_value == p2_value):
+            p1_value = get_keys_from_value(counter1, 2)
+            p2_value = get_keys_from_value(counter2, 2)
+            if(p1_value > p2_value):
+                return True
+            elif(p1_value < p2_value):
+                return False
+        else:
+            return False
+
+    elif(rank == CARD_RANK.THREE_KIND):
+        # スリーカードのときは3枚ペアの値だけを比較
+        p1_value = get_keys_from_value(counter1, 3)
+        p2_value = get_keys_from_value(counter2, 3)
+        if(p1_value > p2_value):
+            return True
+        elif(p1_value < p2_value):
+            return False
+        else:
+            # 同じカードは4枚しかないので同じになることはない
+            error(p1_card, p2_card)
+
+    elif(rank == CARD_RANK.TWO_PAIRS):
+        p1_value = get_keys_from_value(counter1, 2)
+        p2_value = get_keys_from_value(counter2, 2)
+        if(p1_value > p2_value):
+            return True
+        elif(p1_value == p2_value):
+            p1_value = get_keys_from_value(counter1, 1)
+            p2_value = get_keys_from_value(counter2, 1)
+            if(p1_value > p2_value):
+                return True
+            elif(p1_value < p2_value):
+                return False
+        else:
+            return False
+
+    elif(rank == CARD_RANK.ONE_PAIR):
+        p1_value = get_keys_from_value(counter1, 2)
+        p2_value = get_keys_from_value(counter2, 2)
+        if(p1_value > p2_value):
+            return True
+        elif(p1_value == p2_value):
+            return is_max_value(p1_card, p2_card)
+        else:
+            return False
+    else:
+        error(p1_card, p2_card)
 
 # カードの役を返す
 def get_card_rank_and_value(card):
