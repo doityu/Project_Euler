@@ -219,7 +219,7 @@ def get_card_rank_and_value(card):
     # ・ストレート 
     # ・フラッシュ 
     if(is_straight and is_flash):
-        if(card_value[0] == CARD_VALUES['A']):
+        if('A' in card_value):
             # ロイヤルストレートフラッシュ
             return CARD_RANK.ROYAL_FLUSH
         else:
