@@ -35,6 +35,7 @@ def get_value(num):
 if __name__ == "__main__":
     # エラー回避用に再起回数の上限を変更
     # RecursionError: maximum recursion depth exceeded in comparison
+    # 参考：https://note.nkmk.me/python-sys-recursionlimit/
     sys.setrecursionlimit(1500)
     ans = 0
     for i in range(BORDER):
