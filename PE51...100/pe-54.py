@@ -28,6 +28,11 @@ CARD_VALUES = {'2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'T':10, '
 # カードのスーツ
 CARD_SUIT = ['S', 'D', 'H', 'C']
 
+# 何かしらエラーが起こった際に呼ぶ
+def error(p1_card, p2_card):
+    print("勝敗を決められません", p1_card, p2_card)
+    sys.exit(1)
+
 # poker.txtからプレイヤー1と2の手札のリストを返す
 def preparation():
     f = open("./pe-54_poker.txt", "r")
@@ -69,8 +74,7 @@ def is_max_value(p1_card, p2_card):
         elif(p1_card_num[i] < p2_card_num[i]):
             return False
     else:
-        print("勝敗を決められません", p1_card, p2_card)
-        sys.exit(1)
+        error(p1_card, p2_card)
 
 # TODO:お互いの手札の役が同じ場合に呼ばれる役の中身を比較する
 def get_compariosn_rank(p1_card, p2_card, rank):
@@ -154,7 +158,7 @@ def get_card_rank_and_value(card):
         # 役がない場合
         return CARD_RANK.HIGH_CARD
 
-# TODO:プレイヤー１の手札がプレイヤー2の手札に勝っているか判定する
+# プレイヤー１の手札がプレイヤー2の手札に勝っているか判定する
 def is_win_player1(p1_card, p2_card):
     p1_rank = get_card_rank_and_value(p1_card)
     p2_rank = get_card_rank_and_value(p2_card)
@@ -163,14 +167,7 @@ def is_win_player1(p1_card, p2_card):
         return True
     elif(p1_rank.value == p2_rank.value):
         # カードの役が同じ場合、役を構成する中で値が最も大きい方が勝ち
-        p1_value, p2_value = compariosn_rank(p1_card, p2_card, p1_rank)
-        if(p1_value > p2_value):
-            return True
-        elif(p1_value == p2_value):
-            # 上記の値が同じ場合、一番値が大きいカード方が勝ち
-            return is_max_value(p1_card, p2_card)
-        else:
-            return False
+        return compariosn_rank(p1_card, p2_card, p1_rank)
     else:
         return False
 
