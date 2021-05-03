@@ -10,6 +10,11 @@ import sys
 from enum import Enum
 import collections
 
+# 比較結果の種類
+class COMPARIOSN_RESULT_KIND(Enum):
+    HIGH = 0
+    LOW  = 1
+    SAME = 2
 
 # カードの役の種類
 class CARD_RANK(Enum):
@@ -36,6 +41,17 @@ def error(p1_card, p2_card):
 # 辞書の値からキーを取得
 def get_keys_from_value(d, val):
     return [k for k, v in d.items() if v == val]
+
+# 値を比較しp1が大きいか返す
+def compariosn_value(p1_counter, p2_counter, count):
+    p1_value = get_keys_from_value(p1_counter, count)
+    p2_value = get_keys_from_value(p2_counter, count)
+    if(p1_value > p2_value):
+        return COMPARIOSN_RESULT_KIND.HIGH
+    elif(p1_value == p2_value):
+        return COMPARIOSN_RESULT_KIND.SAME
+    else:
+        return COMPARIOSN_RESULT_KIND.LOW
 
 # poker.txtからプレイヤー1と2の手札のリストを返す
 def preparation():
@@ -107,69 +123,61 @@ def get_compariosn_rank(p1_card, p2_card, rank):
 
     if(rank == CARD_RANK.FOUR_KIND):
         # フォーカードときは回数順に並んだ値の大きさだけ比較する
-        p1_value = get_keys_from_value(counter1, 4)
-        p2_value = get_keys_from_value(counter2, 4)
-        if(p1_value > p2_value):
+        result = compariosn_value(counter1, counter2, 4)
+        if(result == COMPARIOSN_RESULT_KIND.HIGH):
             return True
-        elif(p1_value == p2_value):
-            p1_value = get_keys_from_value(counter1, 1)
-            p2_value = get_keys_from_value(counter2, 1)
-            if(p1_value > p2_value):
+        elif(result == COMPARIOSN_RESULT_KIND.SAME):
+            result = compariosn_value(counter1, counter2, 1)
+            if(result == COMPARIOSN_RESULT_KIND.HIGH):
                 return True
-            elif(p1_value < p2_value):
+            elif(result == COMPARIOSN_RESULT_KIND.LOW):
                 return False
         else:
             return False
-
+        error(p1_card, p2_card)
     elif(rank == CARD_RANK.FULL_HOUSE):
         # フルハウスのときも回数順に並んだ値の大きさだけ比較する
-        p1_value = get_keys_from_value(counter1, 3)
-        p2_value = get_keys_from_value(counter2, 3)
-        if(p1_value > p2_value):
+        result = compariosn_value(counter1, counter2, 3)
+        if(result == COMPARIOSN_RESULT_KIND.HIGH):
             return True
-        elif(p1_value == p2_value):
-            p1_value = get_keys_from_value(counter1, 2)
-            p2_value = get_keys_from_value(counter2, 2)
-            if(p1_value > p2_value):
+        elif(result == COMPARIOSN_RESULT_KIND.SAME):
+            result = compariosn_value(counter1, counter2, 2)
+            if(result == COMPARIOSN_RESULT_KIND.HIGH):
                 return True
-            elif(p1_value < p2_value):
+            elif(result == COMPARIOSN_RESULT_KIND.LOW):
                 return False
         else:
             return False
-
+        error(p1_card, p2_card)
     elif(rank == CARD_RANK.THREE_KIND):
         # スリーカードのときは3枚ペアの値だけを比較
-        p1_value = get_keys_from_value(counter1, 3)
-        p2_value = get_keys_from_value(counter2, 3)
-        if(p1_value > p2_value):
+        result = compariosn_value(counter1, counter2, 3)
+        if(result == COMPARIOSN_RESULT_KIND.HIGH):
             return True
-        elif(p1_value < p2_value):
+        elif(result == COMPARIOSN_RESULT_KIND.LOW):
             return False
         else:
             # 同じカードは4枚しかないので同じになることはない
             error(p1_card, p2_card)
 
     elif(rank == CARD_RANK.TWO_PAIRS):
-        p1_value = get_keys_from_value(counter1, 2)
-        p2_value = get_keys_from_value(counter2, 2)
-        if(p1_value > p2_value):
+        result = compariosn_value(counter1, counter2, 2)
+        if(result == COMPARIOSN_RESULT_KIND.HIGH):
             return True
-        elif(p1_value == p2_value):
-            p1_value = get_keys_from_value(counter1, 1)
-            p2_value = get_keys_from_value(counter2, 1)
-            if(p1_value > p2_value):
+        elif(result == COMPARIOSN_RESULT_KIND.SAME):
+            result = compariosn_value(counter1, counter2, 1)
+            if(result == COMPARIOSN_RESULT_KIND.HIGH):
                 return True
-            elif(p1_value < p2_value):
+            elif(result == COMPARIOSN_RESULT_KIND.LOW):
                 return False
         else:
             return False
 
     elif(rank == CARD_RANK.ONE_PAIR):
-        p1_value = get_keys_from_value(counter1, 2)
-        p2_value = get_keys_from_value(counter2, 2)
-        if(p1_value > p2_value):
+        result = compariosn_value(counter1, counter2, 2)
+        if(result == COMPARIOSN_RESULT_KIND.HIGH):
             return True
-        elif(p1_value == p2_value):
+        elif(result == COMPARIOSN_RESULT_KIND.SAME):
             return is_max_value(p1_card, p2_card)
         else:
             return False
@@ -251,7 +259,7 @@ def get_card_rank_and_value(card):
             # ワン・ペア
             return CARD_RANK.ONE_PAIR
     else:
-        # 役がない場合
+        # 役無し(ハイカード)
         return CARD_RANK.HIGH_CARD
 
 # プレイヤー１の手札がプレイヤー2の手札に勝っているか判定する
@@ -279,7 +287,9 @@ if __name__ == "__main__":
 
     royal = ['TC', 'JC', 'QC', 'KC', 'AC']
     sample = ['AC', 'QC', 'TC', 'KS', 'JS']
-    for i in range(10):
-        print(get_card_rank_and_value(p1_card_list[i]), get_card_rank_and_value(p2_card_list[i]))
+    test1 = ['AC', 'AC', '5C', '5S', 'AS']
+    test2 = ['AC', 'AC', '5C', '5S', '5S']
+    print(get_compariosn_rank(test1, test2, CARD_RANK.FULL_HOUSE))
+
 
 
